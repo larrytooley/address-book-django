@@ -42,7 +42,7 @@ INSTALLED_APPS = (
 
     # My apps
     'address_books',
-    # 'users',
+    'users',
 )
 
 MIDDLEWARE_CLASSES = (

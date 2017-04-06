@@ -1,33 +1,25 @@
 {% extends 'address_books/base.html' %}
 
-{% block header %}
-  <h2>{{ address }}</h2>
-{% endblock header %}
-
 {% block content %}
-<p>
-  <a href="{% url 'address_books:new_address' address.id %}">add new address</a>
-</p>
-  {% for address in entries %}
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3>
-        {{ address.date_added|date:'M d, Y H:i' }}
+        {{ address }}
         <small>
             <a href="{% url 'address_books:edit_address' address.id %}">
-              edit address</a>
+               - edit address </a>
+            <a href="{% url 'address_books:delete_address' address.id %}">
+               - delete address</a>
           </small>
       </h3>
     </div>
     <div class="panel-body">
-      {{ address.text|linebreaks }}
+      {{ address.street_address|linebreaks }}
+      <a href="tel:{{ address.phone_number}}">{{ address.phone_number}}</a><br>
+      <a href="mailto:{{ address.email_address }}">{{ address.email_address }}</a>
+      </ul>
     </div>
   </div>
   <!-- panel -->
-  {% empty %}
-  <li>
-    There are no entries for this address yet.
-  </li>
-  {% endfor %}
 </ul>
 {% endblock content %}

@@ -7,6 +7,6 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    # url(r'^users/', include('users.urls', namespace='users')),
+    url(r'^users/', include('users.urls', namespace='users')),
     url(r'', include('address_books.urls', namespace='address_books')),
 ]

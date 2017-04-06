@@ -11,7 +11,7 @@ from .forms import AddressForm
 
 def check_address_owner(request, current_address):
     """ Make sure the address entry belongs to the current user."""
-    if address.owner != request.user:
+    if current_address.owner != request.user:
         raise Http404
 
 
@@ -24,7 +24,7 @@ def index(request):
 @login_required
 def addresses(request):
     """Show all addresses"""
-    current_addresses = Address.objects.filter_by(owner=request.user).order_by('last_name')
+    current_addresses = Address.objects.filter(owner=request.user).order_by('last_name')
     return render(request, 'address_books/addresses.html', {'addresses': current_addresses})
 
 @login_required
@@ -42,7 +42,7 @@ def new_address(request):
     """Add a new address"""
     if request.method != 'POST':
         # No data has been submitted, display blank form
-        current_address = AddressForm()
+        form = AddressForm()
     else:
         # Data submitted, process data
         form = AddressForm(request.POST)
@@ -63,7 +63,7 @@ def edit_address(request, address_id):
 
     if request.method != 'POST':
         # Fill form with curent data if no data passed
-        form = AddressForm(instrance=current_address)
+        form = AddressForm(instance=current_address)
     else:
         # Data submitted and processed
         form = AddressForm(instance=current_address, data=request.POST)
@@ -74,6 +74,7 @@ def edit_address(request, address_id):
     return render(request, 'address_books/edit_address.html',
                   {'address': current_address, 'form': form})
 
+@login_required
 def delete_address(request, address_id):
     """Delete address from address book"""
     current_address = Address.objects.get(id=address_id)
