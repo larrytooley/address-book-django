@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -9,9 +10,10 @@ class Address(models.Model):
     phone_number = models.CharField(max_length=15)
     email_address = models.EmailField()
     street_address = models.TextField()
+    owner = models.ForeignKey(User)
 
-    class meta:
-        verbose_name_plural = 'addresses'
+    class Meta:
+        verbose_name_plural = "addresses"
 
     def __str__(self):
         """Return a string representation of the model."""
