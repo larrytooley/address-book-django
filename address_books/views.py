@@ -6,7 +6,8 @@ from .models import Address
 # Create your views here.
 
 def index(response):
-    return HttpResponse('Hello, world! This is the index page.')
+    """Home page of Address Books"""
+    return render(response, 'address_books/index.html')
 
 def addresses(response):
     return HttpResponse('This is the page for all addresses.')

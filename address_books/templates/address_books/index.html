@@ -1,0 +1,13 @@
+{% extends "address_books/base.html" %}
+
+{% block header %}
+<div class='jumbotron'>
+    <h1>Track your addresses.</h1>
+</div>
+{% endblock header %}
+
+{% block content %}
+<h2>
+    <a href="{% url 'users:register' %}">Register an account</a> to make your own Address Book, and let your address book remember your addresses for you.
+</h2>
+{% endblock content %}

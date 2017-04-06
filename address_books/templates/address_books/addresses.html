@@ -1,0 +1,19 @@
+{% extends "address_books/base.html" %}
+
+{% block header %}
+  <h1>addresss</h1>
+{% endblock header %}
+{% block content %}
+  <ul>
+    {% for address in addresses %}
+      <li>
+        <h3>
+          <a href="{% url 'address_books:address' address.id %}">{{ address }}</a>
+        </h3>
+      </li>
+    {% empty %}
+      <li>No addresss have been added yet.</li>
+    {% endfor %}
+  </ul>
+    <h3><a href="{% url 'address_books:new_address' %}">Add new address</h3>
+{% endblock content %}
