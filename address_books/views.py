@@ -69,7 +69,7 @@ def edit_address(request, address_id):
         form = AddressForm(instance=current_address, data=request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('address_books/address', args=current_address.id))
+            return HttpResponseRedirect(reverse('address_books:address', args=[current_address.id]))
 
     return render(request, 'address_books/edit_address.html',
                   {'address': current_address, 'form': form})

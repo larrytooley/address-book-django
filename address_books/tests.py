@@ -1,94 +1,91 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 
 from .models import Address
+
+
+def create_test_address():
+
+    address = {
+        'first_name': 'Guido',
+        'last_name': 'Van Rossum',
+        'phone_number': '555-555-5555',
+        'email_address': 'guido@dropbox.com',
+        'street_address': '2323 Elderberry Lane\nCamelot, CA 55555',
+        # 'owner': 1
+    }
+    new_address = Address(**address)
+    # new_address.save()
+    return new_address
+
 
 # Create your tests here.
 
 class AddressModelTests(TestCase):
+    """Test of Address model"""
 
-    def test_first_name(self):
-        """
-        Test database model.
-        """
-        address = Address(first_name='Larry', last_name='Tooley', phone_number='317-560-4258',
-                          email_address='larry@larrytooley.com', street_address='1065 Taurus Lane')
-        self.assertEqual(address.first_name, 'Larry')
+    def test_add_address(self):
+        """Test database model."""
+        new_address = create_test_address()
+        self.assertEqual(new_address.first_name, 'Guido')
 
-# class QuestionViewTests(TestCase):
-#     def test_index_view_with_no_questions(self):
-#         """
-#         If no questions exist, an appropriate message should be displayed.
-#         """
-#         response = self.client.get(reverse('polls:index'))
-#         self.assertEqual(response.status_code, 200)
-#         self.assertContains(response, "No polls are available.")
-#         self.assertQuerysetEqual(response.context['latest_question_list'], [])
+class IndexPageTest(TestCase):
 
-#     def test_index_view_with_a_past_question(self):
-#         """
-#         Questions with a pub_date in the past should be displayed on the
-#         index page.
-#         """
-#         create_question(question_text="Past question.", days=-30)
-#         response = self.client.get(reverse('polls:index'))
-#         self.assertQuerysetEqual(
-#             response.context['latest_question_list'],
-#             ['<Question: Past question.>']
-#         )
+    def test_uses_index_template(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'address_books/index.html')
 
-#     def test_index_view_with_a_future_question(self):
-#         """
-#         Questions with a pub_date in the future should not be displayed on
-#         the index page.
-#         """
-#         create_question(question_text="Future question.", days=30)
-#         response = self.client.get(reverse('polls:index'))
-#         self.assertContains(response, "No polls are available.")
-#         self.assertQuerysetEqual(response.context['latest_question_list'], [])
+class AddressesPageTest(TestCase):
 
-#     def test_index_view_with_future_question_and_past_question(self):
-#         """
-#         Even if both past and future questions exist, only past questions
-#         should be displayed.
-#         """
-#         create_question(question_text="Past question.", days=-30)
-#         create_question(question_text="Future question.", days=30)
-#         response = self.client.get(reverse('polls:index'))
-#         self.assertQuerysetEqual(
-#             response.context['latest_question_list'],
-#             ['<Question: Past question.>']
-#         )
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='jacob', password='top_secret')
 
-#     def test_index_view_with_two_past_questions(self):
-#         """
-#         The questions index page may display multiple questions.
-#         """
-#         create_question(question_text="Past question 1.", days=-30)
-#         create_question(question_text="Past question 2.", days=-5)
-#         response = self.client.get(reverse('polls:index'))
-#         self.assertQuerysetEqual(
-#             response.context['latest_question_list'],
-#             ['<Question: Past question 2.>', '<Question: Past question 1.>']
-#         )
+    def test_uses_addresses_template(self):
+        self.client.login(username='jacob', password='top_secret')
+        response = self.client.get('/addresses/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'address_books/addresses.html')
 
+class AddressPageTest(TestCase):
 
-# class QuestionIndexDetailTests(TestCase):
-#     def test_detail_view_with_a_future_question(self):
-#         """
-#         The detail view of a question with a pub_date in the future should
-#         return a 404 not found.
-#         """
-#         future_question = create_question(question_text='Future question.', days=5)
-#         url = reverse('polls:detail', args=(future_question.id,))
-#         response = self.client.get(url)
-#         self.assertEqual(response.status_code, 404)
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='jacob', password='top_secret')
+        current_address = create_test_address()
 
-#     def test_detail_view_with_a_past_question(self):
-#         """
-#         The detail view of a question with a pub_date in the past should
-#         display the question's text.
-#         """
-#         past_question = create_question(question_text='Past Question.', days=-5)
-#         url = reverse('polls:detail', args=(past_question.id,))
-#         response = self.client.get(url)
-#         self.assertContains(response, past_question.question_text)
+    def test_uses_address_template(self):
+        self.client.login(username='jacob', password='top_secret')
+        response = self.client.get('/address/1/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'address_books/address.html')
+
+class EditAddressPageTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='jacob', password='top_secret')
+
+    def test_uses_edit_address_template(self):
+        self.client.login(username='jacob', password='top_secret')
+        response = self.client.get('/edit_address/1/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'address_books/edit_address.html')
+
+class NewAddressPageTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='jacob', password='top_secret')
+
+    def test_uses_new_address_template(self):
+        self.client.login(username='jacob', password='top_secret')
+        response = self.client.get('/new_address/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'address_books/new_address.html')
